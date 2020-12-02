@@ -1,0 +1,228 @@
+basePath: /api/v1
+definitions:
+  api.Description:
+    properties:
+      message:
+        example: Операция выполнена успешно
+        type: string
+      reason:
+        type: string
+      stacktrace:
+        type: string
+    type: object
+  api.HTTPError:
+    properties:
+      archive:
+        example: false
+        type: boolean
+      count_inner_themes:
+        example: 0
+        type: integer
+      count_outer_themes:
+        example: 0
+        type: integer
+      date_archive:
+        example: "2016-02-20"
+        type: string
+      description:
+        items:
+          $ref: '#/definitions/api.Description'
+        type: array
+      inner_themes:
+        items:
+          $ref: '#/definitions/api.InnerTheme'
+        type: array
+      name_razdel:
+        example: qwerty
+        type: string
+      otdel_razdel:
+        additionalProperties:
+          $ref: '#/definitions/api.Otdel'
+        type: object
+      outer_themes:
+        items:
+          $ref: '#/definitions/api.OuterTheme'
+        type: array
+      success:
+        example: false
+        type: boolean
+    type: object
+  api.Healthcheck:
+    properties:
+      DB_addr:
+        example: 192.168.8.250
+        type: string
+      DB_name:
+        example: dbqueue_korenovsk_actual
+        type: string
+      DB_time:
+        example: "2020-11-23 15:47:00.900"
+        type: string
+      name:
+        example: Сервис получения информации по разделу
+        type: string
+      root_path:
+        example: section-info
+        type: string
+      version:
+        example: "1"
+        type: string
+    type: object
+  api.InnerTheme:
+    properties:
+      id_theme:
+        example: 123
+        type: integer
+      name_theme:
+        type: string
+    type: object
+  api.Otdel:
+    properties:
+      limit:
+        type: string
+      windows:
+        items:
+          type: integer
+        type: array
+    type: object
+  api.OuterTheme:
+    properties:
+      id_theme:
+        example: 123
+        type: integer
+      name_theme:
+        type: string
+      tax:
+        example: true
+        type: boolean
+    type: object
+  api.Section:
+    properties:
+      archive:
+        example: false
+        type: boolean
+      count_inner_themes:
+        example: 0
+        type: integer
+      count_outer_themes:
+        example: 0
+        type: integer
+      date_archive:
+        example: "2016-02-20"
+        type: string
+      description:
+        items:
+          $ref: '#/definitions/api.Description'
+        type: array
+      inner_themes:
+        items:
+          $ref: '#/definitions/api.InnerTheme'
+        type: array
+      name_razdel:
+        example: qwerty
+        type: string
+      otdel_razdel:
+        additionalProperties:
+          $ref: '#/definitions/api.Otdel'
+        type: object
+      outer_themes:
+        items:
+          $ref: '#/definitions/api.OuterTheme'
+        type: array
+      success:
+        example: false
+        type: boolean
+    type: object
+  api.SectionRequest:
+    properties:
+      id_operator:
+        example: 2
+        type: integer
+      id_otdel:
+        example: 123
+        type: integer
+      id_razdel:
+        example: 123123
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: This service allows webui to access content program functionality
+  license:
+    name: Proprietary
+  title: Content program rest gateway API
+  version: "1.0"
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Returns service info
+      operationId: healthckeck
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Healthcheck'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Returns service info
+      tags:
+      - sections
+  /sections:
+    post:
+      consumes:
+      - application/json
+      description: Finds all sections
+      operationId: get-sections
+      parameters:
+      - description: sections request
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.SectionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Section'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Finds all sections
+      tags:
+      - sections
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
